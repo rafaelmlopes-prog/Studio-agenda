@@ -1,0 +1,863 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#211d1a">
+<title>Ateliê Beauty | Agendamento Online</title>
+
+<style>
+:root {
+  --bg: #f6f3ef;
+  --card: #ffffff;
+  --text: #29241f;
+  --muted: #81786f;
+  --gold: #a77b4d;
+  --line: #e8e0d7;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.container {
+  max-width: 1050px;
+  margin: auto;
+  padding: 20px;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 0;
+}
+
+h1, h2, h3 { margin-top: 0; }
+
+button, input, select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+.btn {
+  background: var(--gold);
+  color: white;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 9px;
+  font-weight: bold;
+}
+
+.btn.secondary {
+  background: white;
+  color: var(--text);
+  border: 1px solid var(--line);
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  padding: 20px;
+  margin-bottom: 18px;
+}
+
+.hero {
+  background: linear-gradient(120deg, #211d1a, #594331);
+  color: white;
+  padding: 40px 25px;
+  border-radius: 18px;
+  margin: 15px 0 20px;
+}
+
+.hero h1 {
+  font-size: 40px;
+  margin-bottom: 10px;
+}
+
+.hero span { color: #d5b58c; }
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+label {
+  display: block;
+  font-size: 12px;
+  margin: 12px 0 5px;
+  font-weight: bold;
+  color: var(--muted);
+}
+
+input, select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: white;
+}
+
+.calendar-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 18px 0;
+}
+
+.weekdays, .calendar {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+  text-align: center;
+}
+
+.weekdays {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.day {
+  aspect-ratio: 1;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+}
+
+.day:hover:not(:disabled) {
+  border-color: var(--gold);
+}
+
+.day.selected {
+  background: var(--gold);
+  color: white;
+}
+
+.day:disabled {
+  opacity: .25;
+  cursor: not-allowed;
+}
+
+.slots {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin: 15px 0;
+}
+
+.slot {
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 11px 4px;
+}
+
+.slot.selected {
+  background: var(--gold);
+  color: white;
+}
+
+.slot:disabled {
+  opacity: .3;
+  text-decoration: line-through;
+}
+
+.summary {
+  background: #f8f5f1;
+  border-radius: 10px;
+  padding: 15px;
+  margin: 15px 0;
+}
+
+.summary p {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 14px;
+}
+
+.price {
+  color: var(--gold);
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.hidden { display: none !important; }
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 18px 0;
+}
+
+.tab {
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 13px;
+}
+
+.tab.active {
+  background: var(--gold);
+  color: white;
+}
+
+.booking {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 13px;
+  margin: 10px 0;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.muted { color: var(--muted); }
+
+.danger { color: #b94d4d; }
+
+@media(max-width: 720px) {
+  .grid { grid-template-columns: 1fr; }
+  .hero h1 { font-size: 32px; }
+  .slots { grid-template-columns: repeat(3, 1fr); }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<header>
+  <div>
+    <strong id="brand">ATELIÊ BEAUTY</strong>
+    <div class="muted">BEAUTY EXPERIENCE</div>
+  </div>
+  <button class="btn secondary" onclick="openManager()">
+    Área do gestor
+  </button>
+</header>
+
+<main id="client">
+
+<section class="hero">
+  <h1>Seu momento.<br><span>Sua beleza.</span></h1>
+  <p>Agende seu horário com praticidade.</p>
+</section>
+
+<div class="grid">
+
+<section class="card">
+
+  <h2>01. Escolha seu serviço</h2>
+
+  <label>Serviço</label>
+  <select id="service"></select>
+
+  <label>Profissional</label>
+  <select id="professional"></select>
+
+  <hr>
+
+  <h2>02. Escolha a data</h2>
+
+  <div class="calendar-head">
+    <button class="btn secondary" onclick="changeMonth(-1)">←</button>
+    <strong id="monthLabel"></strong>
+    <button class="btn secondary" onclick="changeMonth(1)">→</button>
+  </div>
+
+  <div class="weekdays">
+    <span>Dom</span><span>Seg</span><span>Ter</span>
+    <span>Qua</span><span>Qui</span><span>Sex</span>
+    <span>Sáb</span>
+  </div>
+
+  <div class="calendar" id="calendar"></div>
+
+</section>
+
+<section class="card">
+
+  <h2>03. Escolha o horário</h2>
+
+  <p id="selectedDate" class="muted">
+    Selecione uma data.
+  </p>
+
+  <div class="slots" id="slots"></div>
+
+  <hr>
+
+  <h2>04. Seus dados</h2>
+
+  <label>Nome completo</label>
+  <input id="clientName" placeholder="Seu nome">
+
+  <label>WhatsApp</label>
+  <input id="clientPhone" placeholder="11999999999">
+
+  <label>Observações</label>
+  <input id="notes" placeholder="Preferências">
+
+  <div class="summary">
+    <p>Serviço <strong id="sumService">—</strong></p>
+    <p>Data <strong id="sumDate">—</strong></p>
+    <p>Profissional <strong id="sumPro">—</strong></p>
+    <p>Total <strong class="price" id="sumPrice">R$ 0,00</strong></p>
+  </div>
+
+  <button class="btn" style="width:100%" onclick="book()">
+    Confirmar agendamento
+  </button>
+
+</section>
+</div>
+</main>
+
+<!-- PAINEL ADMINISTRATIVO -->
+
+<main id="manager" class="hidden">
+
+  <button class="btn secondary" onclick="backClient()">
+    ← Voltar
+  </button>
+
+  <h1>Painel do gestor</h1>
+
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('overview',this)">Visão geral</button>
+    <button class="tab" onclick="showTab('reservations',this)">Reservas</button>
+    <button class="tab" onclick="showTab('blocks',this)">Bloqueios</button>
+    <button class="tab" onclick="showTab('settings',this)">Configurações</button>
+  </div>
+
+  <section id="overview">
+    <div class="card">
+      <h3>Indicadores</h3>
+      <p>Reservas hoje: <strong id="todayCount">0</strong></p>
+      <p>Total de reservas: <strong id="totalCount">0</strong></p>
+      <p>Faturamento: <strong id="revenue">R$ 0,00</strong></p>
+    </div>
+    <div class="card">
+      <h3>Próximas reservas</h3>
+      <div id="upcoming"></div>
+    </div>
+  </section>
+
+  <section id="reservations" class="hidden">
+    <div class="card">
+      <h3>Todas as reservas</h3>
+      <input id="filterName" placeholder="Buscar cliente..." oninput="renderAdmin()">
+      <div id="allBookings"></div>
+    </div>
+  </section>
+
+  <section id="blocks" class="hidden">
+    <div class="card">
+      <h3>Bloquear horário</h3>
+      <label>Data</label>
+      <input type="date" id="blockDate">
+      <label>Horário</label>
+      <select id="blockTime"></select>
+      <label>Profissional</label>
+      <select id="blockPro"></select>
+      <button class="btn" onclick="addBlock()">Bloquear</button>
+      <hr>
+      <div id="blockList"></div>
+    </div>
+  </section>
+
+  <section id="settings" class="hidden">
+    <div class="card">
+      <h3>Configurações</h3>
+
+      <label>Nome do salão</label>
+      <input id="setBrand">
+
+      <label>WhatsApp comercial</label>
+      <input id="setWhats" placeholder="5511999999999">
+
+      <label>Nova senha do gestor</label>
+      <input id="setPin" type="password">
+
+      <button class="btn" onclick="saveSettings()">Salvar</button>
+
+      <hr>
+
+      <h3>Adicionar serviço</h3>
+      <label>Nome</label>
+      <input id="newService">
+
+      <label>Preço</label>
+      <input id="newPrice" type="number">
+
+      <button class="btn" onclick="addService()">Adicionar serviço</button>
+
+      <hr>
+
+      <h3>Adicionar profissional</h3>
+      <input id="newPro" placeholder="Nome">
+      <button class="btn" onclick="addProfessional()">Adicionar</button>
+
+      <hr>
+
+      <button class="btn secondary" onclick="exportData()">
+        Exportar backup JSON
+      </button>
+    </div>
+  </section>
+
+</main>
+</div>
+
+<script>
+const KEY = "atelie_beauty_v1";
+
+const defaults = {
+  brand: "ATELIÊ BEAUTY",
+  whats: "",
+  pin: "1234",
+  services: [
+    {id:"1",name:"Corte feminino",price:90},
+    {id:"2",name:"Corte masculino",price:50},
+    {id:"3",name:"Escova",price:65},
+    {id:"4",name:"Coloração",price:180},
+    {id:"5",name:"Hidratação",price:100}
+  ],
+  pros: ["Profissional 1","Profissional 2"],
+  bookings: [],
+  blocks: []
+};
+
+function loadData() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(KEY));
+    return saved ? {...defaults,...saved} : structuredClone(defaults);
+  } catch {
+    return structuredClone(defaults);
+  }
+}
+
+let db = loadData();
+let selectedDate = "";
+let selectedTime = "";
+let currentMonth = new Date();
+
+const $ = id => document.getElementById(id);
+
+const hours = Array.from({length:12},(_,i)=>
+  String(i+8).padStart(2,"0")+":00"
+);
+
+function save() {
+  localStorage.setItem(KEY,JSON.stringify(db));
+  $("brand").textContent=db.brand;
+}
+
+function today() {
+  const d=new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+}
+
+function money(v) {
+  return Number(v).toLocaleString("pt-BR",{
+    style:"currency",currency:"BRL"
+  });
+}
+
+function dateText(date) {
+  return new Date(date+"T12:00:00").toLocaleDateString("pt-BR");
+}
+
+function currentService() {
+  return db.services.find(s=>s.id===$("service").value);
+}
+
+function booked(date,time,pro) {
+  return db.bookings.some(b=>
+    b.date===date && b.time===time && b.pro===pro
+  );
+}
+
+function blocked(date,time,pro) {
+  return db.blocks.some(b=>
+    b.date===date && b.time===time &&
+    (b.pro==="Todos" || b.pro===pro)
+  );
+}
+
+function available(date,time,pro) {
+  return !booked(date,time,pro) && !blocked(date,time,pro);
+}
+
+function init() {
+  $("brand").textContent=db.brand;
+
+  $("service").innerHTML=db.services.map(s=>
+    `<option value="${s.id}">${s.name} - ${money(s.price)}</option>`
+  ).join("");
+
+  $("professional").innerHTML=db.pros.map(p=>
+    `<option>${p}</option>`
+  ).join("");
+
+  $("blockPro").innerHTML=["Todos",...db.pros].map(p=>
+    `<option>${p}</option>`
+  ).join("");
+
+  $("blockTime").innerHTML=hours.map(h=>
+    `<option>${h}</option>`
+  ).join("");
+
+  renderCalendar();
+  renderSlots();
+  summary();
+  renderAdmin();
+}
+
+function renderCalendar() {
+  const y=currentMonth.getFullYear();
+  const m=currentMonth.getMonth();
+  const first=new Date(y,m,1).getDay();
+  const last=new Date(y,m+1,0).getDate();
+
+  $("monthLabel").textContent=
+    currentMonth.toLocaleDateString("pt-BR",{
+      month:"long",year:"numeric"
+    });
+
+  let html="";
+
+  for(let i=0;i<first;i++) html+="<span></span>";
+
+  for(let d=1;d<=last;d++) {
+    const date=`${y}-${String(m+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+    const disabled=date<today();
+
+    html+=`
+      <button class="day ${selectedDate===date?"selected":""}"
+        ${disabled?"disabled":""}
+        onclick="selectDate('${date}')">${d}</button>
+    `;
+  }
+
+  $("calendar").innerHTML=html;
+}
+
+function changeMonth(n) {
+  currentMonth=new Date(
+    currentMonth.getFullYear(),
+    currentMonth.getMonth()+n,
+    1
+  );
+  renderCalendar();
+}
+
+function selectDate(date) {
+  selectedDate=date;
+  selectedTime="";
+  renderCalendar();
+  renderSlots();
+  summary();
+}
+
+function renderSlots() {
+  $("selectedDate").textContent=
+    selectedDate ? dateText(selectedDate) : "Selecione uma data.";
+
+  if(!selectedDate) {
+    $("slots").innerHTML="";
+    return;
+  }
+
+  const pro=$("professional").value;
+
+  $("slots").innerHTML=hours.map(h=>{
+    const ok=available(selectedDate,h,pro);
+    return `
+      <button class="slot ${selectedTime===h?"selected":""}"
+        ${ok?"":"disabled"}
+        onclick="selectTime('${h}')">${h}</button>
+    `;
+  }).join("");
+}
+
+function selectTime(time) {
+  selectedTime=time;
+  renderSlots();
+  summary();
+}
+
+function summary() {
+  const s=currentService();
+
+  $("sumService").textContent=s?.name||"—";
+  $("sumDate").textContent=
+    selectedDate ? `${dateText(selectedDate)} ${selectedTime}` : "—";
+  $("sumPro").textContent=$("professional").value||"—";
+  $("sumPrice").textContent=money(s?.price||0);
+}
+
+function book() {
+  const name=$("clientName").value.trim();
+  const phone=$("clientPhone").value.replace(/\D/g,"");
+  const s=currentService();
+  const pro=$("professional").value;
+
+  if(!name || phone.length<10 || !selectedDate || !selectedTime || !s) {
+    alert("Preencha os dados e escolha data e horário.");
+    return;
+  }
+
+  if(!available(selectedDate,selectedTime,pro)) {
+    alert("Horário indisponível.");
+    renderSlots();
+    return;
+  }
+
+  const booking={
+    id:Date.now().toString(),
+    name,phone,
+    service:s.name,
+    serviceId:s.id,
+    price:s.price,
+    pro,
+    date:selectedDate,
+    time:selectedTime,
+    status:"Confirmado",
+    notes:$("notes").value
+  };
+
+  db.bookings.push(booking);
+  save();
+
+  const message=
+`Olá! Gostaria de confirmar meu agendamento.
+
+Cliente: ${name}
+Serviço: ${s.name}
+Profissional: ${pro}
+Data: ${dateText(selectedDate)}
+Horário: ${selectedTime}
+Valor: ${money(s.price)}`;
+
+  const destination=db.whats.replace(/\D/g,"")||phone;
+
+  const url=
+    `https://wa.me/${destination}?text=${encodeURIComponent(message)}`;
+
+  window.open(url,"_blank");
+
+  alert("Agendamento registrado!");
+
+  selectedTime="";
+  $("clientName").value="";
+  $("clientPhone").value="";
+  $("notes").value="";
+
+  renderCalendar();
+  renderSlots();
+  summary();
+  renderAdmin();
+}
+
+function openManager() {
+  const password=prompt("Senha do gestor:");
+  if(password===null) return;
+
+  if(password!==db.pin) {
+    alert("Senha incorreta.");
+    return;
+  }
+
+  $("client").classList.add("hidden");
+  $("manager").classList.remove("hidden");
+  renderAdmin();
+}
+
+function backClient() {
+  $("manager").classList.add("hidden");
+  $("client").classList.remove("hidden");
+}
+
+function showTab(tab,button) {
+  ["overview","reservations","blocks","settings"].forEach(t=>
+    $(t).classList.toggle("hidden",t!==tab)
+  );
+
+  document.querySelectorAll(".tab").forEach(b=>
+    b.classList.remove("active")
+  );
+
+  button.classList.add("active");
+  renderAdmin();
+}
+
+function renderAdmin() {
+  const list=[...db.bookings].sort((a,b)=>
+    (a.date+a.time).localeCompare(b.date+b.time)
+  );
+
+  const todayList=list.filter(b=>b.date===today());
+
+  $("todayCount").textContent=todayList.length;
+  $("totalCount").textContent=list.length;
+
+  $("revenue").textContent=money(
+    list.reduce((sum,b)=>sum+Number(b.price),0)
+  );
+
+  function card(b) {
+    return `
+      <div class="booking">
+        <div>
+          <strong>${b.name}</strong>
+          <p class="muted">${b.service} - ${b.pro}</p>
+          <p class="muted">${dateText(b.date)} - ${b.time}</p>
+        </div>
+        <div>
+          <strong>${money(b.price)}</strong>
+          <br>
+          <button class="danger" onclick="cancelBooking('${b.id}')">
+            Cancelar
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
+  $("upcoming").innerHTML=list
+    .filter(b=>(b.date+b.time)>=today()+"00:00")
+    .slice(0,5).map(card).join("");
+
+  const search=$("filterName").value.toLowerCase();
+
+  $("allBookings").innerHTML=list
+    .filter(b=>b.name.toLowerCase().includes(search))
+    .map(card).join("");
+
+  $("blockList").innerHTML=db.blocks.map(b=>`
+    <div class="booking">
+      ${dateText(b.date)} - ${b.time} - ${b.pro}
+      <button onclick="removeBlock('${b.id}')">Remover</button>
+    </div>
+  `).join("");
+
+  $("setBrand").value=db.brand;
+  $("setWhats").value=db.whats;
+}
+
+function cancelBooking(id) {
+  if(!confirm("Deseja cancelar esta reserva?")) return;
+
+  db.bookings=db.bookings.filter(b=>b.id!==id);
+  save();
+  renderAdmin();
+  renderCalendar();
+  renderSlots();
+}
+
+function addBlock() {
+  const date=$("blockDate").value;
+  const time=$("blockTime").value;
+  const pro=$("blockPro").value;
+
+  if(!date || date<today()) {
+    alert("Selecione uma data válida.");
+    return;
+  }
+
+  db.blocks.push({
+    id:Date.now().toString(),
+    date,time,pro
+  });
+
+  save();
+  renderAdmin();
+  renderSlots();
+}
+
+function removeBlock(id) {
+  db.blocks=db.blocks.filter(b=>b.id!==id);
+  save();
+  renderAdmin();
+  renderSlots();
+}
+
+function saveSettings() {
+  db.brand=$("setBrand").value.trim();
+  db.whats=$("setWhats").value.replace(/\D/g,"");
+
+  if($("setPin").value) {
+    db.pin=$("setPin").value;
+  }
+
+  save();
+  init();
+  alert("Configurações salvas!");
+}
+
+function addService() {
+  const name=$("newService").value.trim();
+  const price=Number($("newPrice").value);
+
+  if(!name || !Number.isFinite(price) || price<0) {
+    alert("Informe serviço e preço.");
+    return;
+  }
+
+  db.services.push({
+    id:Date.now().toString(),
+    name,price
+  });
+
+  save();
+  init();
+}
+
+function addProfessional() {
+  const name=$("newPro").value.trim();
+
+  if(!name) return;
+
+  db.pros.push(name);
+  save();
+  init();
+}
+
+function exportData() {
+  const blob=new Blob(
+    [JSON.stringify(db,null,2)],
+    {type:"application/json"}
+  );
+
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+
+  a.href=url;
+  a.download="backup-atelie-beauty.json";
+  a.click();
+
+  URL.revokeObjectURL(url);
+}
+
+init();
+</script>
+
+</body>
+</html>
+
